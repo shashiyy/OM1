@@ -1,12 +1,92 @@
-<CycloneDDS>
-  <Domain>
+<?xml version="1.0" encoding="UTF-8" ?>
+<CycloneDDS xmlns="https://cdds.io/config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+  <Domain Id="any">
     <General>
+      <!-- 
+        Cross-platform network interface configuration
+        CycloneDDS will try to use the first available interface from this list
+        This covers common interface names across different platforms:
+        - macOS: en0, en1, en2, etc.
+        - Linux: eth0, ens0, eno1, ens33, enp0s3, etc.
+        - Docker: eth0 (default in containers)
+      -->
       <Interfaces>
+        <!-- macOS primary ethernet/wifi interfaces -->
         <NetworkInterface name="en0" priority="default" multicast="default" />
+        <NetworkInterface name="en1" priority="default" multicast="default" />
+        <NetworkInterface name="en2" priority="default" multicast="default" />
+        
+        <!-- Linux common ethernet interfaces -->
+        <NetworkInterface name="eth0" priority="default" multicast="default" />
+        <NetworkInterface name="eth1" priority="default" multicast="default" />
+        
+        <!-- Linux predictable network interface names (systemd) -->
+        <NetworkInterface name="eno1" priority="default" multicast="default" />
+        <NetworkInterface name="eno2" priority="default" multicast="default" />
+        <NetworkInterface name="ens0" priority="default" multicast="default" />
+        <NetworkInterface name="ens1" priority="default" multicast="default" />
+        <NetworkInterface name="ens32" priority="default" multicast="default" />
+        <NetworkInterface name="ens33" priority="default" multicast="default" />
+        <NetworkInterface name="ens34" priority="default" multicast="default" />
+        
+        <!-- VirtualBox/VMware common interfaces -->
+        <NetworkInterface name="enp0s3" priority="default" multicast="default" />
+        <NetworkInterface name="enp0s8" priority="default" multicast="default" />
+        <NetworkInterface name="enp2s0" priority="default" multicast="default" />
+        <NetworkInterface name="enp3s0" priority="default" multicast="default" />
+        
+        <!-- Unitree G1 specific interface -->
+        <NetworkInterface name="enP2p1s0" priority="default" multicast="default" />
+        
+        <!-- Wireless interfaces (if needed) -->
+        <NetworkInterface name="wlan0" priority="default" multicast="default" />
+        <NetworkInterface name="wlp2s0" priority="default" multicast="default" />
       </Interfaces>
+      
+      <!-- Allow multicast for robot discovery -->
+      <AllowMulticast>default</AllowMulticast>
+      
+      <!-- Enable local loopback for testing -->
+      <EnableLoopback>true</EnableLoopback>
     </General>
+    
     <Discovery>
+      <!-- Enable topic discovery for DDS communication -->
       <EnableTopicDiscoveryEndpoints>true</EnableTopicDiscoveryEndpoints>
+      
+      <!-- Discovery timing configuration for faster node discovery -->
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>100</MaxAutoParticipantIndex>
+      
+      <!-- Improve discovery in networks with packet loss -->
+      <DefaultMulticastLocator>
+        <LocatorKind>UDPv4</LocatorKind>
+        <Address>239.255.0.1</Address>
+        <Port>7400</Port>
+      </DefaultMulticastLocator>
     </Discovery>
+    
+    <Tracing>
+      <!-- Verbosity can be set to: error, warning, info, debug, trace -->
+      <Verbosity>warning</Verbosity>
+      <OutputFile>cyclonedds.log</OutputFile>
+      <AppendToFile>false</AppendToFile>
+    </Tracing>
+    
+    <Internal>
+      <!-- Performance tuning for robotics applications -->
+      <SocketReceiveBufferSize>1048576</SocketReceiveBufferSize>
+      <SocketSendBufferSize>1048576</SocketSendBufferSize>
+      
+      <!-- Increase reliability for wireless networks -->
+      <HeartbeatInterval>100 ms</HeartbeatInterval>
+      <NackDelay>10 ms</NackDelay>
+      
+      <!-- Memory settings for large data (e.g., point clouds, images) -->
+      <MaxMessageSize>65536</MaxMessageSize>
+      <FragmentSize>4096</FragmentSize>
+    </Internal>
   </Domain>
 </CycloneDDS>
